@@ -3,6 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "description": "made by nikhil",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
