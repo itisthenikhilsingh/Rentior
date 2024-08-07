@@ -1,117 +1,167 @@
+import { useState, useEffect } from "react"
 import uploadProfilePic from "../assets/upload.png"
-import {useState} from 'react'
-import {Link} from 'react-router-dom'
-const RegisterPage = () => {
-    const [formData, setformData]=useState({
-    firstName:"",
-    lastName:"",
-    email:"",
-    password:"",
-    confirmPassword:"",
-    profileImage:""
-  })
-  const handleChange=(e)=>{
-    const {name,value,files}=e.target
-    setformData({
-        ...formData,
-        [name]:value==="profileImage" ? files[0]:value,
-    })
+import { Link, useNavigate } from "react-router-dom"
 
+const RegisterPage = () => {
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    profileImage: "",
+  })
+
+  //   console.log(formData)
+
+  const [passwordMatch, setPasswordMatch] = useState(true)
+
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    setPasswordMatch(
+      formData.password === formData.confirmPassword ||
+        formData.confirmPassword === ""
+    )
+  })
+
+  const handleChange = (e) => {
+    const { name, value, files } = e.target
+
+    setFormData({
+      ...formData,
+      [name]: value,
+      [name]: name === "profileImage" ? files[0] : value,
+    })
   }
 
+  const handleSubmit = async (e) => {
+    e.preventDefault()
 
-    return (
-        <div className="max-w-lg mx-auto p-3">
-            <h1 className="text-3xl text-center my-7 font-semibold">Sign Up</h1>
+    try {
+      const registerForm = new FormData()
 
-            <form action="" className="flex flex-col gap-3" >
-                <input
-                    type="text"
-                    placeholder="First Name"
-                    name="firstName"
-                    className="p-3 rounded-lg border"
-                    value={formData.firstName}
-                    onChange={handleChange}
-                    required
-                />
+      for (var key in formData) {
+        registerForm.append(key, formData[key])
+      }
 
-                <input
-                    type="text"
-                    placeholder="Last Name"
-                    name="lastName"
-                    className="p-3 rounded-lg border"
-                    value={formData.lastName}
-                    onChange={handleChange}
-                    required
+      const response = await fetch("http://localhost:3000/api/auth/register", {
+        method: "POST",
+        body: registerForm,
+      })
 
-                />
+      if (response.ok) {
+        navigate("/login")
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
-                <input
-                    type="email"
-                    placeholder="Email"
-                    name="email"
-                    className="p-3 rounded-lg border"
-                    value={formData.email}
-                    onChange={handleChange}
-                    required
+  return (
+    <div className="max-w-lg mx-auto p-3">
+      <h1 className="text-3xl text-center my-7 font-semibold">Sign Up</h1>
 
-                />
+      <form action="" className="flex flex-col gap-4" onSubmit={handleSubmit}>
+        <input
+          type="text"
+          placeholder="First Name"
+          name="firstName"
+          className="p-3 rounded-lg border"
+          value={formData.firstName}
+          onChange={handleChange}
+          required
+        />
 
-                <input
-                    type="password"
-                    placeholder="Password"
-                    name="password"
-                    className="p-3 rounded-lg border"
-                    value={formData.password}
-                    onChange={handleChange}
-                    required
+        <input
+          type="text"
+          placeholder="Last Name"
+          name="lastName"
+          className="p-3 rounded-lg border"
+          required
+          value={formData.lastName}
+          onChange={handleChange}
+        />
 
-                />
+        <input
+          type="email"
+          placeholder="Email"
+          name="email"
+          className="p-3 rounded-lg border"
+          required
+          value={formData.email}
+          onChange={handleChange}
+        />
 
-                <input
-                    type="password"
-                    placeholder="Confirm Password"
-                    name="confirmPassword"
-                    className="p-3 rounded-lg border"
-                    value={formData.confirmPassword}
-                    onChange={handleChange}
-                    required
+        <input
+          type="password"
+          placeholder="Password"
+          name="password"
+          className="p-3 rounded-lg border"
+          required
+          value={formData.password}
+          onChange={handleChange}
+        />
 
-                />
+        <input
+          type="password"
+          placeholder="Confirm Password"
+          name="confirmPassword"
+          className="p-3 rounded-lg border"
+          required
+          value={formData.confirmPassword}
+          onChange={handleChange}
+        />
 
+        {!passwordMatch && (
+          <p className="text-red-500">Passwords are not matched</p>
+        )}
 
+        <input
+          id="image"
+          type="file"
+          name="profileImage"
+          accept="image/*"
+          className="hidden"
+          required
+          onChange={handleChange}
+        />
 
-                <input
-                    id="image"
-                    type="file"
-                    name="profileImage"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={handleChange}
-                    required
+        <label htmlFor="image" className="flex items-center gap-3 mt-2 mb-2">
+          {formData.profileImage ? (
+            <img
+              src={URL.createObjectURL(formData.profileImage)}
+              alt="profile photo"
+              style={{ maxWidth: "80px" }}
+            />
+          ) : (
+            <img
+              src={uploadProfilePic}
+              alt="add profile photo"
+              className="w-8 h-8"
+            />
+          )}
 
-                />
-                <label htmlFor="image" className="  flex items-center gap-3 mt-2 mb-2">
-                    {
-                        formData.profileImage ?(
-                            <img src={URL.createObjectURL(formData.profileImage)} alt="img" style={{maxWidth:"80px"}}/>
+          <p className="text-lg text-slate-700">Upload Your Photo</p>
+        </label>
 
-                        ):(
-                            <img src={uploadProfilePic} className=" hover:opacity-60 w-8 h-8"/>
-                     )
-                    }
-                    
-                </label>
+        <button
+          className="bg-slate-700  rounded-lg p-3 text-white uppercase hover:opacity-95 disabled:opacity-80"
+          disabled={!passwordMatch}
+        >
+          Register
+        </button>
+      </form>
 
-                <button className="bg-slate-700 rounded-lg p-3 text-white uppercase hover:opacity-90"> Register</button>
-            </form>
+      <div className="mt-5 flex gap-2">
+        <p>Already have an account?</p>
 
-            <div className="mt-5 flex gap-2">
-                <p >Already have an account?</p>
-                <Link to={"/login"}><span className="text-blue-700">Sign in</span></Link>
-            </div>
-        </div>
-    )
+        <Link to={"/login"}>
+          <span className="text-blue-700">Sign in</span>
+        </Link>
+      </div>
+    </div>
+  )
 }
 
 export default RegisterPage
