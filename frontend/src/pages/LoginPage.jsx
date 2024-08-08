@@ -1,6 +1,12 @@
 
+import { useState } from "react"
 import { Link } from "react-router-dom"
 const LoginPage = () => {
+    const [email,setEmail]=useState("");
+    const [password,setPassword]=useState("");
+    
+
+
 
   
   return (
@@ -17,6 +23,8 @@ const LoginPage = () => {
                     name="email"
                     className="p-3 rounded-lg border"
                     required
+                    value={email}
+                    onChange={(e)=>setEmail(e.target.value)}
 
                 />
 
@@ -26,6 +34,8 @@ const LoginPage = () => {
                     name="password"
                     className="p-3 rounded-lg border"
                     required
+                    value={password}
+                    onChange={(e)=>setPassword(e.target.value)}
 
                 />
 
