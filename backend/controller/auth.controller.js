@@ -1,5 +1,4 @@
-import { json } from "body-parser";
-import User from "../models/user.model";
+import User from "../models/user.model.js";
 import bcryptjs from "bcryptjs";
 
 export const register = async (req, res, next) => {
@@ -11,21 +10,27 @@ export const register = async (req, res, next) => {
       return res.status(400).send("no file Uploaded");
     }
 
-    const profileImagePath = profileImage.profileImagePath;
+    const profileImagePath = profileImage.path;
     const existingUser = await User.findOne({ email });
 
     if (existingUser) {
-      return res.status(409), json({ message: "user already exist" });
-      const hashedPassword = bcryptjs.hashSync(password, 10);
-
-      const newUSer = new User({
-        firstName,
-        lastName,
-        email,
-        password: hashedPassword,
-        profileImagePath,
-      });
+      return res.status(409).json({ message: "User already exst" });
     }
+
+    const hashedPassword = bcryptjs.hashSync(password, 10);
+
+    const newUser = new User({
+      firstName,
+      lastName,
+      email,
+      password: hashedPassword,
+      profileImagePath,
+    });
+
+    await newUser.save();
+    res
+      .status(201)
+      .json({ message: "User created successfully", User: newUser });
   } catch (error) {
     console.log(error);
   }

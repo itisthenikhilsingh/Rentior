@@ -5,6 +5,7 @@ const LoginPage = () => {
   
   return (
     <div className="max-w-lg mx-auto p-3">
+        <nav> <Link to={"/"}><span className="text-blue-700">Go To HOME</span></Link></nav>
             <h1 className="text-3xl text-center my-7 font-semibold">Sign In</h1>
 
             <form action="" className="flex flex-col gap-3" >
