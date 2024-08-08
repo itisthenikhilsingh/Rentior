@@ -33,5 +33,6 @@ export const register = async (req, res, next) => {
       .json({ message: "User created successfully", User: newUser });
   } catch (error) {
     console.log(error);
+    res.status(500).json({ message: "Internal Server Error" });
   }
 };
